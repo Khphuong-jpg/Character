@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư viện Character - Tự tạo</title>
+    <style>
+        /* --- CSS: Trang trí giao diện --- */
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f111a; /* Nền tối giống hình mẫu */
+            color: white;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #a78bfa;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Khu vực nhập liệu */
+        .input-section {
+            background: #1e1b4b;
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #3b3b6d;
+        }
+
+        .input-section input {
+            flex: 1;
+            min-width: 150px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #4c4c8a;
+            background-color: #111827;
+            color: white;
+            outline: none;
+        }
+
+        .input-section input:focus {
+            border-color: #8b5cf6;
+        }
+
+        .input-section button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #8b5cf6;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .input-section button:hover {
+            background-color: #7c3aed;
+        }
+
+        /* Khu vực chứa các Card */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Style của từng Card Character */
+        .card {
+            background: linear-gradient(135deg, #1e1b4b, #111827);
+            border-radius: 20px;
+            padding: 20px;
+            width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #2d2a5a;
+            position: relative;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12ậppx;
+            background-color: # t8b5cf6;
+            display: flex;
+ên            align-items: center;
+            justify-content: center thì b;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+            color: #e5e7eb;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: #9ca3af;
+            margin: 10px 0;
+            line-height: 1.5;
+            min-height: 40px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid #3b3b6d;
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: #d1d5db;
+        }
+
+        /* Nút xóa */
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ef4444;
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .card:hover .delete-btn {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Thư viện Character WLW</h1>
+
+    <!-- KHU VỰC NHẬP LIỆU -->
+    <div class="input-section">
+        <input type="text" id="charName" placeholder="Tên nhân vật (VD: Bánh Mì Bế Xíu)">
+        <input type="text" id="charDesc" placeholder="Mô tả ngắn...">
+        <input type="text" id="charTags" placeholder="Tags (cách nhau bởi dấu phẩy: WLW, Cổ trang)">
+        <button onclick="addCharacter()">Thêm Character</button>
+    </div>
+
+    <!-- KHU VỰC HIỂN THỊ CARD -->
+    <div class="card-container" id="cardContainer">
+        <!-- Các card sẽ được JS tạo ra ở đây -->
+    </div>
+
+    <script>
+        // Hàm xử lý khi bấm nút "Thêm Character"
+        function addCharacter() {
+            // 1. Lấy dữ liệu từ các ô input
+            const name = document.getElementById('charName').value.trim();
+            const desc = document.getElementById('charDesc').value.trim();
+            const tagsInput = document.getElementById('charTags').value.trim();
+
+            // 2. Kiểm tra nếu chưa nháo lỗi
+            if (name === "") {
+                alert("Vui lòng nhập tên nhân vật!");
+                return;
+            }
+
+            // 3. Tạo danh sách tags
+            let tagsHTML = "";
+            if (tagsInput !== "") {
+                // Cắt chuỗi bằng dấu phẩy, xóa khoảng trắng thừa
+                const tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== "");
+                // Tạo các thẻ span cho từng tag
+                tagsHTML = tagsArray.map(tag => `<span class="tag">#${tag}</span>`).join('');
+            }
+
+            // 4. Tạo phần tử Card mới bằng HTML
+            const cardHTML = `
+                <div class="card">
+                    <button class="delete-btn" onclick="this.parentElement.remove()">✕</button>
+                    <div class="card-header">
+                        <div class="avatar">${name.charAt(0).toUpperCase()}</div>
+                        <h3 class="card-title">${name}</h3>
+                    </div>
+                    <p class="card-desc">${desc || "Chưa có mô tả."}</p>
+                    <div class="tags">
+                        ${tagsHTML || '<span class="tag">#Chưa có tag</span>'}
+                    </div>
+                </div>
+            `;
+
+            // 5. Thêm Card mới vào khu vực chứa
+            const container = document.getElementById('cardContainer');
+            container.insertAdjacentHTML('beforeend', cardHTML);
+
+            // 6. Xóa trắng các ô input sau khi thêm thành công
+            document.getElementById('charName').value = '';
+            document.getElementById('charDesc').value = '';
+            document.getElementById('charTags').value = '';
+        }
+    </script>
+
+</body>
+</html>
